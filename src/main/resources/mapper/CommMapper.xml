@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="com.ehrd.kb.comm.repository.CommRepository">
+ 
+    <select id="selectEmpList" resultType="com.ehrd.kb.comm.model.EmpVO">
+        SELECT *
+          FROM TB_EMP
+         WHERE 1=1
+         <if test='empNo != null and empNo != ""'>
+           AND EMP_NO = #{empNo}
+         </if>
+         ORDER BY EMP_NO
+    </select>
+
+    <select id="selectMenuList" resultType="com.ehrd.kb.comm.model.MenuVO">
+        WITH RECURSIVE REC  AS
+        (
+           SELECT A.MENU_ID, A.MENU_NM, A.PARENT_ID, A.MENU_URL, A.MENU_ORDR, 0 AS MENU_LVL
+             FROM TB_MENU A
+            WHERE A.MENU_ID = '000000'
+            UNION ALL
+           SELECT B.MENU_ID, B.MENU_NM, B.PARENT_ID, B.MENU_URL, B.MENU_ORDR, 1 + MENU_LVL
+             FROM TB_MENU B
+            INNER JOIN
+                  REC C
+               ON B.PARENT_ID = C.MENU_ID
+        )
+        SELECT A.*
+          FROM REC A
+         WHERE A.PARENT_ID IS NOT NULL
+         ORDER BY A.MENU_ORDR
+    </select>
+
+    <select id="selectSubMenuList" resultType="com.ehrd.kb.comm.model.MenuVO">
+        WITH RECURSIVE REC  AS
+        (
+           SELECT A.MENU_ID, A.MENU_NM, A.PARENT_ID, A.MENU_URL, A.MENU_ORDR, 0 AS MENU_LVL
+             FROM TB_MENU A
+            WHERE A.MENU_ID = ${menuId}
+            UNION ALL
+           SELECT B.MENU_ID, B.MENU_NM, B.PARENT_ID, B.MENU_URL, B.MENU_ORDR, 1 + MENU_LVL
+             FROM TB_MENU B
+            INNER JOIN
+                  REC C
+               ON B.PARENT_ID = C.MENU_ID
+        )
+        SELECT A.*
+          FROM REC A
+         WHERE A.PARENT_ID IS NOT NULL
+           AND A.MENU_LVL > 0
+         ORDER BY A.MENU_ORDR
+    </select>
+ 
+</mapper>

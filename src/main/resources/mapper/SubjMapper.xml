@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="com.ehrd.kb.home.repository.SubjRepository">
+ 
+    <select id="selectSubjList" resultType="com.ehrd.kb.home.model.SubjVO">
+        SELECT *
+          FROM TB_SUBJ
+         WHERE 1=1
+         <if test='subjCd != null and subjCd != ""'>
+           AND SUBJ_CD = ${subjCd}
+         </if>
+    </select>
+ 
+</mapper>
